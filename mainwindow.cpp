@@ -4,6 +4,8 @@
 #include <iostream>
 #include <math.h>       /* sqrt */
 
+#include <locale>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -11,11 +13,20 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    std::cout.imbue(std::locale("en_US.utf8"));
+    std::cin.imbue(std::locale("en_US.utf8"));
 
+    QLocale::setDefault(QLocale::C);
+
+    const char* locale = "C";
+    std::locale::global(std::locale(locale));
+
+
+    std::cout << "----------- Start of digit slot assigning -----------\n";
 
     QGridLayout* numbergrid = ui->numberGrid;
 
-    for (int i = 0; i < numbergrid->count(); ++i){
+    for (double i = 0; i < numbergrid->count(); ++i){
         QLayoutItem *but = numbergrid->itemAt(i);
 
         std::cout << but->widget()->objectName().toStdString() << "\n";
@@ -37,11 +48,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     }
 
+    std::cout << "------------ End of digit slot assigning ------------\n";
+
+
 
     QGridLayout* operatorGrid = ui->operatorGrid;
 
 
-    for (int i = 0; i < operatorGrid->count(); ++i){
+
+    for (double i = 0; i < operatorGrid->count(); ++i){
         QLayoutItem *but = operatorGrid->itemAt(i);
 
 
@@ -64,8 +79,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     QBoxLayout* plusMinusBox = ui->plusMinusBox;
 
+    std::cout << "----------- Start of Operator slot assigning -----------\n";
 
-    for (int i = 0; i < plusMinusBox->count(); ++i){
+
+    for (double i = 0; i < plusMinusBox->count(); ++i){
         QLayoutItem *but = plusMinusBox->itemAt(i);
         std::cout << but->widget()->objectName().toStdString() << "\n";
 
@@ -82,6 +99,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     }
 
+    std::cout << "----------- Start of Operator slot assigning -----------\n";
+
+
+    //ui->ResultLineEdit->setLocale(QLocale::English);
 
 }
 
@@ -93,7 +114,7 @@ MainWindow::~MainWindow()
 
 bool hasPreviousValue = false;
 
-int previousValue = 0;
+double previousValue = 0;
 
 enum Operation {none, plus, minus, multiply, divide};
 
@@ -116,7 +137,7 @@ void MainWindow::on_RightBracketButton_clicked()
 
 void checkIfZero(QLineEdit* resultBox){
 
-    float number = resultBox->text().toFloat();
+    double number = resultBox->text().toDouble();
     if (number == 0.0){
         resultBox->clear();
     }
@@ -141,7 +162,7 @@ void MainWindow::digitClicked(){
 
 
 
-    float currentNumber = ui->ResultLineEdit->text().toInt();
+    double currentNumber = ui->ResultLineEdit->text().toDouble();
 
     if (currentNumber == 0.0){
         ui->ResultLineEdit->clear();
@@ -168,9 +189,9 @@ void MainWindow::operatorClicked(){
     std::cout << senderObjName << " operator clicked\n";
 
 
-    float currentValue = ui->ResultLineEdit->text().toFloat();
+    double currentValue = ui->ResultLineEdit->text().toDouble();
 
-    float result;
+    double result;
 
     /*
 
@@ -198,11 +219,11 @@ void MainWindow::operatorClicked(){
 
 
 
-        //ui->ResultLineEdit->setText(QString::fromStdString(std::to_string((int) result))); //temp conversion to make testing easier
+        //ui->ResultLineEdit->setText(QString::fromStdString(std::to_string((double) result))); //temp conversion to make testing easier
 
     }else{*/
 
-        previousValue = ui->ResultLineEdit->text().toInt();
+        previousValue = ui->ResultLineEdit->text().toDouble();
         hasPreviousValue = true;
 
 
@@ -255,10 +276,11 @@ void MainWindow::on_EqualButton_clicked()
 
         QString text = ui->ResultLineEdit->text();
 
-        int number = text.toInt();
+        double number = text.toDouble();
 
-        ui->ResultLineEdit->setText(QString::fromStdString(std::to_string(previousValue + number)));
+        double result = previousValue + number;
 
+        setResult(result);
 
 
     }
@@ -268,10 +290,12 @@ void MainWindow::on_EqualButton_clicked()
 
         QString text = ui->ResultLineEdit->text();
 
-        int number = text.toInt();
+        double number = text.toDouble();
 
-        ui->ResultLineEdit->setText(QString::fromStdString(std::to_string(previousValue - number)));
+        double result = previousValue - number;
 
+
+        setResult(result);
 
 
     }
@@ -281,7 +305,7 @@ void MainWindow::on_EqualButton_clicked()
 
         QString text = ui->ResultLineEdit->text();
 
-        int number = text.toInt();
+        double number = text.toDouble();
 
         ui->ResultLineEdit->setText(QString::fromStdString(std::to_string(previousValue * number)));
 
@@ -317,7 +341,7 @@ void MainWindow::on_DeleteButton_clicked()
 void MainWindow::on_MultiplyButton_clicked()
 {
 
-    previousValue = ui->ResultLineEdit->text().toInt();
+    previousValue = ui->ResultLineEdit->text().toDouble();
 
     currentOperation = Operation::multiply;
 
@@ -331,11 +355,13 @@ void MainWindow::on_SquareButton_clicked()
 
     std::cout << "square button clicked\n";
 
-    int result = ui->ResultLineEdit->text().toInt();
+    double result = ui->ResultLineEdit->text().toDouble();
 
-    ui->ResultLineEdit->setText(QString::fromStdString(std::to_string( result * result)));
+    result = result * result;
 
-    currentOperation = Operation::none;
+    setResult(result);
+
+    currentOperation = Operation::none; //is this a good idea?
 
 }
 
@@ -346,10 +372,41 @@ void MainWindow::on_SquareRootButton_clicked()
     std::cout << "square root button clicked\n";
 
 
-    float input = ui->ResultLineEdit->text().toFloat();
+    double input = ui->ResultLineEdit->text().toDouble();
 
-    ui->ResultLineEdit->setText(QString::fromStdString(std::to_string(sqrt(input))));
+
+
+    if (input >= 0.0){
+
+    setResult(sqrt(input));
 
     currentOperation = Operation::none;
+
+    }else{
+
+    std::cout << "ERROR: CAN'T SQUARE NEGATIVE NUMBER\n";
+
+    ui->ResultLineEdit->setText("Error");
+
+    }
+
+}
+
+
+void MainWindow::setResult(double input){
+
+    std::cout << "setting result to: " << input << "\n";
+
+    double intpart;
+    double fractionalpart = std::modf(input, &intpart);
+
+    if (fractionalpart == 0.0){
+        ui->ResultLineEdit->setText(QString::fromStdString(std::to_string((int)intpart)));
+    }else{
+        ui->ResultLineEdit->setText(QString::fromStdString(std::to_string(input)));
+
+    }
+
+
 }
 

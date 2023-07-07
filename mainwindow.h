@@ -42,6 +42,8 @@ private slots:
 
     void on_SquareRootButton_clicked();
 
+    void setResult(double input);
+
 private:
     Ui::MainWindow *ui;
 };
