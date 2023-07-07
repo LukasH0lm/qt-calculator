@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+
 #include <iostream>
+#include <math.h>       /* sqrt */
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -93,7 +95,7 @@ bool hasPreviousValue = false;
 
 int previousValue = 0;
 
-enum Operation {plus, minus, multiply, divide};
+enum Operation {none, plus, minus, multiply, divide};
 
 Operation currentOperation;
 
@@ -192,13 +194,13 @@ void MainWindow::operatorClicked(){
     }*/
 
 
-    if (hasPreviousValue == true){
+    /*if (hasPreviousValue == true){
 
 
 
-        ui->ResultLineEdit->setText(QString::fromStdString(std::to_string((int) result))); //temp conversion to make testing easier
+        //ui->ResultLineEdit->setText(QString::fromStdString(std::to_string((int) result))); //temp conversion to make testing easier
 
-    }else{
+    }else{*/
 
         previousValue = ui->ResultLineEdit->text().toInt();
         hasPreviousValue = true;
@@ -207,12 +209,12 @@ void MainWindow::operatorClicked(){
         if (senderObjName == "+"){
 
 
-            currentOperation = Operation.plus;
+            currentOperation = Operation::plus;
         }
 
         if (senderObjName == "-"){
 
-            currentOperation = Operation.minus;
+            currentOperation = Operation::minus;
 
         }
 
@@ -221,7 +223,7 @@ void MainWindow::operatorClicked(){
 
 
 
-    }
+    //}
 
 
 
@@ -248,18 +250,45 @@ void MainWindow::on_EqualButton_clicked()
 
     std::cout << "= button clicked\n";
 
-    if (currentOperation == Operation.plus){
+    if (currentOperation == Operation::plus){
 
 
         QString text = ui->ResultLineEdit->text();
 
         int number = text.toInt();
 
-        ui->ResultLineEdit->setText(QString(std.to_string(previousValue + number)));
+        ui->ResultLineEdit->setText(QString::fromStdString(std::to_string(previousValue + number)));
 
 
 
     }
+
+    if (currentOperation == Operation::minus){
+
+
+        QString text = ui->ResultLineEdit->text();
+
+        int number = text.toInt();
+
+        ui->ResultLineEdit->setText(QString::fromStdString(std::to_string(previousValue - number)));
+
+
+
+    }
+
+    if (currentOperation == Operation::multiply){
+
+
+        QString text = ui->ResultLineEdit->text();
+
+        int number = text.toInt();
+
+        ui->ResultLineEdit->setText(QString::fromStdString(std::to_string(previousValue * number)));
+
+
+
+    }
+
 
 
 }
@@ -270,5 +299,57 @@ void MainWindow::on_EqualButton_clicked()
 void MainWindow::on_pushButton_clicked()
 {
     std::cout << "ahhh";
+}
+
+
+void MainWindow::on_DeleteButton_clicked()
+{
+
+    std::string text = ui->ResultLineEdit->text().toStdString();
+
+    text.pop_back();
+
+    ui->ResultLineEdit->setText(QString::fromStdString(text));
+
+}
+
+
+void MainWindow::on_MultiplyButton_clicked()
+{
+
+    previousValue = ui->ResultLineEdit->text().toInt();
+
+    currentOperation = Operation::multiply;
+
+    ui->ResultLineEdit->clear();
+
+}
+
+
+void MainWindow::on_SquareButton_clicked()
+{
+
+    std::cout << "square button clicked\n";
+
+    int result = ui->ResultLineEdit->text().toInt();
+
+    ui->ResultLineEdit->setText(QString::fromStdString(std::to_string( result * result)));
+
+    currentOperation = Operation::none;
+
+}
+
+
+void MainWindow::on_SquareRootButton_clicked()
+{
+
+    std::cout << "square root button clicked\n";
+
+
+    float input = ui->ResultLineEdit->text().toFloat();
+
+    ui->ResultLineEdit->setText(QString::fromStdString(std::to_string(sqrt(input))));
+
+    currentOperation = Operation::none;
 }
 

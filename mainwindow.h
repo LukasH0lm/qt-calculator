@@ -34,6 +34,14 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_DeleteButton_clicked();
+
+    void on_MultiplyButton_clicked();
+
+    void on_SquareButton_clicked();
+
+    void on_SquareRootButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
