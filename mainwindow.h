@@ -21,18 +21,12 @@ private slots:
     void on_RightBracketButton_clicked();
 
 
-
-
-    void on_actionNumberClicked_triggered();
-
     void digitClicked();
 
     void operatorClicked();
 
     void on_EqualButton_clicked();
 
-
-    void on_pushButton_clicked();
 
     void on_DeleteButton_clicked();
 
@@ -43,6 +37,12 @@ private slots:
     void on_SquareRootButton_clicked();
 
     void setResult(double input);
+
+    void on_PiButton_clicked();
+
+    void on_DivideButton_clicked();
+
+    void on_ModButton_clicked();
 
 private:
     Ui::MainWindow *ui;

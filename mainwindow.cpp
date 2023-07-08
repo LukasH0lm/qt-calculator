@@ -116,7 +116,7 @@ bool hasPreviousValue = false;
 
 double previousValue = 0;
 
-enum Operation {none, plus, minus, multiply, divide};
+enum Operation {none, plus, minus, multiply, divide, modulus};
 
 Operation currentOperation;
 
@@ -254,88 +254,50 @@ void MainWindow::operatorClicked(){
 
 
 
-void MainWindow::on_actionNumberClicked_triggered()
-{
-
-
-    std::cout << senderSignalIndex();
-
-
-
-}
-
-
 void MainWindow::on_EqualButton_clicked()
 {
 
 
     std::cout << "= button clicked\n";
 
+    QString text = ui->ResultLineEdit->text();
+
+    double number = text.toDouble();
+
+
+    double result;
+
+    if (currentOperation == Operation::none){
+            return;
+    }
+
     if (currentOperation == Operation::plus){
-
-
-        QString text = ui->ResultLineEdit->text();
-
-        double number = text.toDouble();
-
-        double result = previousValue + number;
-
-        setResult(result);
-
-
+        result = previousValue + number;
     }
 
     if (currentOperation == Operation::minus){
-
-
-        QString text = ui->ResultLineEdit->text();
-
-        double number = text.toDouble();
-
-        double result = previousValue - number;
-
-
-        setResult(result);
-
-
+       result = previousValue - number;
     }
 
     if (currentOperation == Operation::multiply){
-
-
-        QString text = ui->ResultLineEdit->text();
-
-        double number = text.toDouble();
-
-        ui->ResultLineEdit->setText(QString::fromStdString(std::to_string(previousValue * number)));
-
-
-
+        result = previousValue * number;
     }
 
+    if (currentOperation == Operation::divide){
+        result = previousValue / number;
+    }
+
+    if (currentOperation == Operation::modulus){
+        result = std::fmod(previousValue, number);
+    }
+
+    setResult(result);
 
 
 }
 
 
 
-
-void MainWindow::on_pushButton_clicked()
-{
-    std::cout << "ahhh";
-}
-
-
-void MainWindow::on_DeleteButton_clicked()
-{
-
-    std::string text = ui->ResultLineEdit->text().toStdString();
-
-    text.pop_back();
-
-    ui->ResultLineEdit->setText(QString::fromStdString(text));
-
-}
 
 
 void MainWindow::on_MultiplyButton_clicked()
@@ -348,6 +310,31 @@ void MainWindow::on_MultiplyButton_clicked()
     ui->ResultLineEdit->clear();
 
 }
+
+void MainWindow::on_DivideButton_clicked()
+{
+
+    previousValue = ui->ResultLineEdit->text().toDouble();
+
+    currentOperation = Operation::divide;
+
+    ui->ResultLineEdit->clear();
+
+}
+
+
+void MainWindow::on_ModButton_clicked()
+{
+
+    previousValue = ui->ResultLineEdit->text().toDouble();
+
+    currentOperation = Operation::modulus;
+
+    ui->ResultLineEdit->clear();
+
+}
+
+
 
 
 void MainWindow::on_SquareButton_clicked()
@@ -393,6 +380,8 @@ void MainWindow::on_SquareRootButton_clicked()
 }
 
 
+
+
 void MainWindow::setResult(double input){
 
     std::cout << "setting result to: " << input << "\n";
@@ -400,13 +389,48 @@ void MainWindow::setResult(double input){
     double intpart;
     double fractionalpart = std::modf(input, &intpart);
 
+    std::string str = std::to_string(input);
+
+    str.erase ( str.find_last_not_of('0') + 1, std::string::npos );
+    str.erase ( str.find_last_not_of('.') + 1, std::string::npos );
+
+    ui->ResultLineEdit->setText(QString::fromStdString(str));
+
+    /*
     if (fractionalpart == 0.0){
         ui->ResultLineEdit->setText(QString::fromStdString(std::to_string((int)intpart)));
     }else{
         ui->ResultLineEdit->setText(QString::fromStdString(std::to_string(input)));
 
+    }*/
+
+
+}
+
+
+void MainWindow::on_PiButton_clicked()
+{
+
+    QString result = QString::fromStdString(std::to_string(M_PI));
+
+    ui->ResultLineEdit->setText(result);
+
+}
+
+
+void MainWindow::on_DeleteButton_clicked()
+{
+
+    std::string text = ui->ResultLineEdit->text().toStdString();
+
+    if (!text.empty()){
+    text.pop_back();
+    ui->ResultLineEdit->setText(QString::fromStdString(text));
     }
 
 
 }
+
+
+
 
