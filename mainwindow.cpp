@@ -160,16 +160,18 @@ void MainWindow::digitClicked(){
 
 
 
+    bool ok(false);
 
+    QString currentString = ui->ResultLineEdit->text();
 
-    double currentNumber = ui->ResultLineEdit->text().toDouble();
+    double currentNumber = currentString.toDouble(&ok);
 
-    if (currentNumber == 0.0){
+    if (currentNumber == 0.0 || currentString == "inf" ){
         ui->ResultLineEdit->clear();
     }
 
 
-    QString currentString = ui->ResultLineEdit->text();
+    currentString = ui->ResultLineEdit->text();
 
     ui->ResultLineEdit->setText(currentString.append(senderObj->objectName()));
 
